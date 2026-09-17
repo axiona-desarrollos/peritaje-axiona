@@ -26,7 +26,7 @@ small,.muted{color:var(--ink2)}.mono{font-family:var(--mono);font-size:12.5px}
 .ring{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--acc) calc(var(--p,0)*1%),rgba(255,255,255,.08) 0);position:relative}
 .ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg2)}.ring i{position:relative;z-index:1;font:700 13px var(--mono);font-style:normal}
 .stage{display:flex;flex:1;min-height:0}.stage[hidden]{display:none}.viewport{position:relative;flex:1;min-width:0;min-height:0}.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
-.stage-bar{position:absolute;left:14px;right:14px;bottom:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;pointer-events:none}
+.stage-bar{position:absolute;left:14px;right:calc(380px + 14px);bottom:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;pointer-events:none;z-index:2}
 .grupo{display:flex;gap:4px;background:rgba(10,14,20,.75);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:999px;padding:4px;pointer-events:auto;flex-wrap:wrap}
 .grupo button{border:0;background:transparent;color:var(--ink2);padding:7px 12px;border-radius:999px;cursor:pointer;font-weight:600;font-size:12.5px}
 .grupo button.on,.grupo button[aria-pressed="true"]{background:var(--acc2);color:var(--acc)}.grupo button:hover{color:var(--ink)}
@@ -53,7 +53,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
 .caja span{position:absolute;left:-1px;top:-20px;background:var(--c,var(--acc));color:#04120f;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:6px 6px 0 0;white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--acc);color:#04120f;padding:10px 16px;border-radius:999px;font-weight:700;z-index:20}
 .bar{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
-@media (max-width:860px){:root{--nav:0px}.nav{top:auto;bottom:0;right:0;width:100%;height:60px;flex-direction:row;padding:6px;border-right:0;border-top:1px solid var(--line);justify-content:space-around}.brand{display:none}.nav a{flex-direction:column;gap:2px;padding:6px 4px;font-size:10px}.main{bottom:60px}.stage{flex-direction:column}.panel-lateral{width:auto;flex:none;max-height:46%;border-left:0;border-top:1px solid var(--line)}.vista{padding:14px}.stage-bar{bottom:auto;top:10px}}
+@media (max-width:860px){:root{--nav:0px}.nav{top:auto;bottom:0;right:0;width:100%;height:60px;flex-direction:row;padding:6px;border-right:0;border-top:1px solid var(--line);justify-content:space-around}.brand{display:none}.nav a{flex-direction:column;gap:2px;padding:6px 4px;font-size:10px}.main{bottom:60px}.stage{flex-direction:column}.panel-lateral{width:auto;flex:none;max-height:36%;border-left:0;border-top:1px solid var(--line)}.vista{padding:14px}.stage-bar{position:relative;inset:auto;order:-1;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 10px;background:var(--bg2);border-bottom:1px solid var(--line);scrollbar-width:none;pointer-events:auto}.stage-bar::-webkit-scrollbar{display:none}.stage-bar .grupo{flex:none;flex-wrap:nowrap;background:transparent;border:0;padding:0;backdrop-filter:none}.stage-bar .grupo button{border:1px solid var(--line);white-space:nowrap;padding:7px 11px}}
 @media print{.nav,.top,.stage,.vista:not(#v-peritaje),.noprint{display:none!important}body{overflow:auto;background:#fff;color:#000}.main{position:static}.vista{display:block!important;overflow:visible}.card,.hallazgo{border-color:#ccc;background:#fff;break-inside:avoid}}
 .tour-cap{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);max-width:min(560px,calc(100% - 32px));background:rgba(10,14,20,.88);backdrop-filter:blur(10px);border:1px solid var(--line);border-left:3px solid var(--c,var(--acc));border-radius:14px;padding:12px 16px;z-index:3}
 .tour-cap b{display:block;margin-bottom:2px}.tour-cap small{color:var(--ink2)}
@@ -68,6 +68,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
 .cursor-mano{position:absolute;width:18px;height:18px;border:2px solid var(--acc);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 12px var(--acc);z-index:4}.cursor-mano[hidden]{display:none}
 .credito{position:absolute;right:14px;top:10px;font-size:10px;color:var(--ink2);background:rgba(10,14,20,.6);padding:3px 8px;border-radius:999px}.credito[hidden]{display:none}
 @media (max-width:860px){.explorador{bottom:14px}.manos{width:120px;top:64px}}
+.banco{position:absolute;right:14px;bottom:76px;width:256px;background:rgba(10,14,20,.88);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;gap:10px;z-index:3}.banco[hidden]{display:none}
+.tacometro{position:relative;text-align:center}.tacometro svg{width:84%;height:auto}.tacometro .arco{fill:none;stroke:rgba(255,255,255,.12);stroke-width:10;stroke-linecap:round}.tacometro .rojo{fill:none;stroke:var(--crit);stroke-width:10;stroke-linecap:round;stroke-dasharray:5 100;stroke-dashoffset:-95}
+.tacometro line{stroke:var(--acc);stroke-width:4;stroke-linecap:round;transform-origin:100px 110px;transition:transform .08s linear}.tacometro circle{fill:var(--acc)}
+.tacometro b{position:absolute;left:0;right:0;top:48%;font:800 26px var(--mono);color:var(--ink)}.tacometro small{position:absolute;left:0;right:0;top:72%;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
+.bk-datos{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px;text-align:center}.bk-datos b{display:block;font:800 22px var(--mono)}.bk-datos small{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink2)}.bk-esc{display:grid;place-items:center}.bk-esc small{text-transform:none;letter-spacing:0;color:var(--acc);font-size:11px}
+.bk-botones{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.bk-botones .btn{padding:8px 4px;font-size:11px}
+.acel{appearance:none;border:2px solid var(--acc);background:linear-gradient(180deg,rgba(0,240,192,.22),rgba(0,240,192,.06));color:var(--ink);border-radius:14px;padding:14px;font:800 20px Manrope,sans-serif;letter-spacing:.12em;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;display:grid;gap:2px}.acel small{font-size:10px;letter-spacing:.05em;color:var(--ink2);font-weight:500}.acel.on{background:var(--acc);color:#04120f}.acel.on small{color:#04120f}
+@media (max-width:860px){.banco{left:10px;right:10px;bottom:10px;width:auto;grid-template-columns:120px 1fr;grid-template-areas:"taco datos" "taco botones" "acel acel"}.tacometro{grid-area:taco}.bk-datos{grid-area:datos}.bk-botones{grid-area:botones}.acel{grid-area:acel;padding:12px}.tacometro b{font-size:22px}}
 
 </style>
 </head>
@@ -102,6 +110,13 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
     <div class="manos" id="manos" hidden><video id="manos-video" playsinline muted></video><canvas id="manos-canvas"></canvas><small id="manos-estado">Iniciando cámara…</small></div>
     <div class="cursor-mano" id="cursor-mano" hidden></div>
     <small class="credito" id="credito" hidden></small>
+    <div class="banco" id="banco" hidden>
+      <div class="tacometro"><svg viewBox="0 0 200 165" aria-hidden="true"><path class="arco" d="M 30.7 150 A 80 80 0 1 1 169.3 150" pathLength="100"/><path class="rojo" d="M 30.7 150 A 80 80 0 1 1 169.3 150" pathLength="100"/><line id="bk-aguja" x1="100" y1="110" x2="100" y2="40"/><circle cx="100" cy="110" r="6"/></svg><b id="bk-rpm">0</b><small>rpm × 1000</small></div>
+      <div class="bk-datos"><div><b id="bk-kmh">0</b><small>km/h</small></div><div><b id="bk-marcha">N</b><small>marcha</small></div><div class="bk-esc"><small id="bk-escape">Escape</small></div></div>
+      <div class="bk-botones"><button id="bk-power" class="btn p">Arrancar</button><button id="bk-menos" class="btn">− marcha</button><button id="bk-mas" class="btn">+ marcha</button><button id="bk-qss" class="btn" aria-pressed="true">QSS auto</button></div>
+      <button id="bk-acel" class="acel"><span>ACELERAR</span><small>mantén presionado · o barra espaciadora</small></button>
+    </div>
+    </div>
     <div class="stage-bar">
       <div class="grupo" id="vistas">
         <button data-vista="tres_cuartos" class="on">¾</button><button data-vista="lateral_der">Der.</button><button data-vista="lateral_izq">Izq.</button><button data-vista="frontal">Frente</button><button data-vista="trasera">Atrás</button><button data-vista="superior">Arriba</button>
@@ -114,9 +129,9 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
         <button id="btn-tour">Tour</button>
         <button id="btn-piezas" aria-pressed="false">Piezas</button>
         <button id="btn-manos" aria-pressed="false">Manos</button>
+        <button id="btn-banco" aria-pressed="false">Banco</button>
         <button id="btn-captura">Capturar</button>
       </div>
-    </div>
     </div>
     <section class="vista panel-lateral" id="v-gemelo"></section>
     <section class="vista panel-lateral" id="v-configurador"></section>
@@ -1074,6 +1089,207 @@ function tendidoReal(t) { for (const mat of real.pintura) { mat.userData.u.uPatr
 function meshesDeGrupo(g) { return real.meshes.filter(o => o.userData.grupo === g); }
 
 
+// Banco de pruebas virtual: modelo longitudinal de la R1 (par, relaciones de caja, arrastre), rueda y cadena en
+// movimiento, humo en el escape y motor sonoro por síntesis física (pulsos de escape del cigüeñal crossplane).
+
+// Datos YZF-R1 (RN65): primaria 1,634 · caja 2,600/2,176/1,842/1,579/1,381/1,250 · final 41/16 · llanta 190/55-17
+const MOTOR = { idle: 1250, corte: 13500, qss: 12600, primaria: 1.634, final: 41 / 16, marchas: [2.600, 2.176, 1.842, 1.579, 1.381, 1.250], rueda: 0.3205, masa: 203 + 75, cdA: 0.36 };
+MOTOR.circ = 2 * Math.PI * MOTOR.rueda;
+const CURVA = [[1000, 48], [2500, 66], [4000, 80], [6000, 92], [8000, 102], [9500, 108], [11500, 113], [12500, 110], [13500, 98]];   // Nm aprox.
+function par(rpm) { for (let i = 1; i < CURVA.length; i++) { const [r0, t0] = CURVA[i - 1], [r1, t1] = CURVA[i]; if (rpm <= r1) return t0 + (t1 - t0) * Math.max(0, (rpm - r0)) / (r1 - r0); } return CURVA[CURVA.length - 1][1]; }
+const ratio = (marcha) => MOTOR.primaria * MOTOR.marchas[marcha - 1] * MOTOR.final;
+
+// Firmas acústicas por silenciador: corte pasa-bajos, refuerzo medio [Hz, dB], crepitación en retención y ganancia.
+const SONIDO_ESCAPE = {
+  stock:    { nombre: 'Original Yamaha (catalizador)', lp: 1100, peak: [180, 2], crackle: 0.12, gain: 0.72 },
+  scorpion: { nombre: 'Scorpion Red Power carbono',    lp: 2600, peak: [260, 5], crackle: 0.6, gain: 1.0 },
+  akra:     { nombre: 'Akrapovič titanio',             lp: 3400, peak: [420, 5], crackle: 0.7, gain: 1.05 },
+  sc:       { nombre: 'SC-Project CR-T',               lp: 4800, peak: [520, 6], crackle: 1.0, gain: 1.15 },
+  yoshi:    { nombre: 'Yoshimura Alpha T',             lp: 3000, peak: [300, 4], crackle: 0.5, gain: 1.0 },
+};
+
+// ---------- Motor sonoro (Web Audio) ----------
+class MotorAudio {
+  constructor() { this.ctx = null; this.escape = 'scorpion'; this.muestra = null; this.perfil = null; }
+  async iniciar() {
+    if (this.ctx) { if (this.ctx.state === 'suspended') await this.ctx.resume(); return; }
+    const c = this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.master = c.createGain(); this.master.gain.value = 0;
+    this.comp = c.createDynamicsCompressor(); this.comp.threshold.value = -14; this.comp.ratio.value = 6;
+    this.master.connect(this.comp).connect(c.destination);
+    // cadena de escape: pico medio → pasa-bajos → saturación suave
+    this.peak = c.createBiquadFilter(); this.peak.type = 'peaking';
+    this.lp = c.createBiquadFilter(); this.lp.type = 'lowpass'; this.lp.Q.value = 0.9;
+    this.shaper = c.createWaveShaper(); const n = 512, curva = new Float32Array(n);
+    for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; curva[i] = Math.tanh(2.2 * x) / Math.tanh(2.2); }
+    this.shaper.curve = curva; this.escGain = c.createGain();
+    this.peak.connect(this.lp).connect(this.shaper).connect(this.escGain).connect(this.master);
+    // tren de pulsos crossplane: 720° con encendidos en 0°, 270°, 450° y 540° (orden 1-3-2-4); buffer a 3000 rpm de referencia
+    const sr = c.sampleRate, ciclo = Math.round(sr * 0.04), buf = c.createBuffer(1, ciclo, sr), d = buf.getChannelData(0);
+    for (const ang of [0, 270, 450, 540]) {
+      const i0 = Math.round(ciclo * ang / 720);
+      for (let k = 0; k < 420 && i0 + k < ciclo; k++) { const t = k / sr; d[i0 + k] += 0.9 * Math.sin(Math.PI * Math.min(1, t / 0.0018)) * Math.exp(-t / 0.0022) + (Math.random() * 2 - 1) * 0.55 * Math.exp(-t / 0.0035); }
+    }
+    this.pulsos = c.createBufferSource(); this.pulsos.buffer = buf; this.pulsos.loop = true; this.pulsos.connect(this.peak); this.pulsos.start();
+    // cuerpo mecánico (diente de sierra a la frecuencia de encendido) y soplido de admisión (ruido pasa-banda)
+    this.osc = c.createOscillator(); this.osc.type = 'sawtooth';
+    this.oscLp = c.createBiquadFilter(); this.oscLp.type = 'lowpass'; this.oscLp.frequency.value = 520;
+    this.oscGain = c.createGain(); this.oscGain.gain.value = 0; this.osc.connect(this.oscLp).connect(this.oscGain).connect(this.master); this.osc.start();
+    const nb = c.createBuffer(1, sr * 2, sr), nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    this.nb = nb; this.ruido = c.createBufferSource(); this.ruido.buffer = nb; this.ruido.loop = true;
+    this.ruidoBp = c.createBiquadFilter(); this.ruidoBp.type = 'bandpass'; this.ruidoBp.frequency.value = 1400; this.ruidoBp.Q.value = 0.7;
+    this.ruidoGain = c.createGain(); this.ruidoGain.gain.value = 0; this.ruido.connect(this.ruidoBp).connect(this.ruidoGain).connect(this.master); this.ruido.start();
+    this.setEscape(this.escape);
+  }
+  setEscape(id) {
+    this.escape = id; const p = SONIDO_ESCAPE[id] || SONIDO_ESCAPE.scorpion; this.perfil = p; if (!this.ctx) return;
+    this.peak.frequency.value = p.peak[0]; this.peak.gain.value = p.peak[1]; this.lp.frequency.value = p.lp; this.cargarMuestra(id);
+  }
+  // Muestra real opcional: sonidos/<escape>.mp3 grabado en ralentí (se estira con las rpm). Si no existe, sigue la síntesis.
+  async cargarMuestra(id) {
+    if (this.muestra) { try { this.muestra.src.stop(); } catch {} this.muestra = null; }
+    try {
+      const r = await fetch(`sonidos/${id}.mp3`); if (!r.ok) return;
+      const buf = await this.ctx.decodeAudioData(await r.arrayBuffer());
+      const src = this.ctx.createBufferSource(); src.buffer = buf; src.loop = true; const g = this.ctx.createGain(); g.gain.value = 0;
+      src.connect(g).connect(this.master); src.start(); this.muestra = { src, g, rpmRef: 1250 };
+    } catch {}
+  }
+  actualizar(rpm, thr, encendido) {
+    if (!this.ctx) return; const c = this.ctx, t = c.currentTime, k = 0.05;
+    const nivel = encendido ? (0.32 + 0.68 * thr) * Math.pow(0.45 + 0.55 * rpm / MOTOR.corte, 1.3) : 0;
+    const gEsc = this.perfil ? this.perfil.gain : 1;
+    this.pulsos.playbackRate.setTargetAtTime(Math.max(0.05, rpm / 3000), t, k);
+    this.escGain.gain.setTargetAtTime((this.muestra ? 0.25 : 0.9) * nivel * gEsc, t, k);
+    this.osc.frequency.setTargetAtTime(Math.max(10, rpm / 60 * 2), t, k); this.oscGain.gain.setTargetAtTime(nivel * 0.12, t, k);
+    this.ruidoGain.gain.setTargetAtTime(encendido ? 0.02 + 0.09 * thr * (rpm / MOTOR.corte) : 0, t, k);
+    if (this.muestra) { this.muestra.src.playbackRate.setTargetAtTime(Math.max(0.3, rpm / this.muestra.rpmRef), t, k); this.muestra.g.gain.setTargetAtTime(nivel * 0.9, t, k); }
+    this.master.gain.setTargetAtTime(encendido ? 0.8 : 0, t, 0.08);
+  }
+  // explosiones en retención (escapes libres): ráfagas cortas de ruido por la misma cadena del escape
+  pops(n) {
+    if (!this.ctx || !this.perfil) return; const c = this.ctx;
+    for (let i = 0; i < n; i++) {
+      const s = c.createBufferSource(); s.buffer = this.nb; const g = c.createGain(); const t0 = c.currentTime + Math.random() * 1.1;
+      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(0.9 * this.perfil.crackle * (0.4 + Math.random()), t0 + 0.004); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.05 + Math.random() * 0.06);
+      s.connect(g).connect(this.peak); s.start(t0); s.stop(t0 + 0.2);
+    }
+  }
+  arranque() {
+    if (!this.ctx) return; const c = this.ctx, t = c.currentTime;
+    const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(38, t); o.frequency.linearRampToValueAtTime(58, t + 0.7);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.85);
+    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900; o.connect(f).connect(g).connect(this.comp); o.start(t); o.stop(t + 0.9);
+  }
+}
+
+// ---------- Humo del escape ----------
+class Humo {
+  constructor(scene) {
+    this.n = 220; this.pos = new Float32Array(this.n * 3); this.vel = new Float32Array(this.n * 3); this.vida = new Float32Array(this.n); this.edad = new Float32Array(this.n); this.tam = new Float32Array(this.n); this.alfa = new Float32Array(this.n);
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(this.pos, 3)); g.setAttribute('tam', new THREE.BufferAttribute(this.tam, 1)); g.setAttribute('alfa', new THREE.BufferAttribute(this.alfa, 1));
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(0.5, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+    const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uTex: { value: new THREE.CanvasTexture(c) }, uPR: { value: Math.min(devicePixelRatio, 2) } },
+      vertexShader: `attribute float tam; attribute float alfa; varying float vA; uniform float uPR; void main(){ vA = alfa; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; gl_PointSize = tam * uPR * 380.0 / -mv.z; }`,
+      fragmentShader: `uniform sampler2D uTex; varying float vA; void main(){ float a = texture2D(uTex, gl_PointCoord).a; gl_FragColor = vec4(vec3(0.62, 0.64, 0.66), a * vA); }` });
+    this.puntos = new THREE.Points(g, m); this.puntos.frustumCulled = false; scene.add(this.puntos); this.sig = 0; this.salida = new THREE.Vector3(-1.05, 0.55, 0.22);
+  }
+  emitir(k, fuerza) {
+    for (let j = 0; j < k; j++) {
+      const i = this.sig = (this.sig + 1) % this.n;
+      this.pos.set([this.salida.x, this.salida.y, this.salida.z], i * 3);
+      this.vel.set([-0.9 - Math.random() * 1.2 * fuerza, 0.15 + Math.random() * 0.25, (Math.random() - 0.5) * 0.25], i * 3);
+      this.vida[i] = 0.9 + Math.random() * 0.8; this.edad[i] = 0; this.tam[i] = 0.05 + Math.random() * 0.04;
+    }
+  }
+  paso(dt) {
+    for (let i = 0; i < this.n; i++) {
+      if (this.edad[i] >= this.vida[i]) { this.alfa[i] = 0; continue; }
+      this.edad[i] += dt; const f = this.edad[i] / this.vida[i];
+      this.pos[i * 3] += this.vel[i * 3] * dt; this.pos[i * 3 + 1] += this.vel[i * 3 + 1] * dt; this.pos[i * 3 + 2] += this.vel[i * 3 + 2] * dt;
+      this.vel[i * 3] *= 1 - 1.6 * dt; this.vel[i * 3 + 1] += 0.35 * dt; this.tam[i] += 0.16 * dt; this.alfa[i] = 0.45 * (1 - f) * Math.min(1, f * 6);
+    }
+    const g = this.puntos.geometry; g.attributes.position.needsUpdate = g.attributes.tam.needsUpdate = g.attributes.alfa.needsUpdate = true;
+  }
+}
+
+// ---------- Banco de pruebas (dinámica + acople visual) ----------
+class Banco {
+  constructor(scene) {
+    this.scene = scene; this.audio = new MotorAudio(); this.humo = new Humo(scene);
+    this.encendido = false; this.rpm = 0; this.v = 0; this.marcha = 0; this.acel = 0; this.acelObj = 0; this.qssAuto = true; this.corteHasta = 0; this.arrancando = 0; this.acumHumo = 0; this.pivotes = null; this.tAcelAlto = 0;
+  }
+  // Los grupos de rueda del glTF giran alrededor de su eje real: se envuelven en un pivote centrado en el eje.
+  prepararRuedas() {
+    if (this.pivotes || !real.cargado) return;
+    this.pivotes = [];
+    for (const nombre of ['Yam_R1_Rear_Wheel', 'Yam_R1_Front_Wheel']) {
+      const g = real.raiz.getObjectByName(nombre); if (!g) continue;
+      const centro = new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3());
+      const padre = g.parent, pivot = new THREE.Group(); padre.add(pivot); pivot.position.copy(padre.worldToLocal(centro.clone())); pivot.attach(g);
+      const eje = new THREE.Vector3(0, 0, 1).applyQuaternion(padre.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
+      this.pivotes.push({ pivot, eje, trasera: nombre.includes('Rear') });
+    }
+    const cadena = real.meshes.find(m => m.material?.name === 'Chain'); if (cadena?.material.map) { cadena.material.map.wrapS = cadena.material.map.wrapT = THREE.RepeatWrapping; this.cadenaMap = cadena.material.map; }
+    this.actualizarSalida();
+  }
+  actualizarSalida() {
+    let lista = real.cargado ? real.meshes.filter(m => m.userData.grupo === 'Exhaust' && m.visible) : [];
+    if (!lista.length) lista = REG.porComp.silenciador || [];
+    if (!lista.length) return;
+    const box = new THREE.Box3(); lista.forEach(m => box.expandByObject(m)); const c = box.getCenter(new THREE.Vector3());
+    this.humo.salida.set(box.min.x + 0.03, c.y + (box.max.y - c.y) * 0.4, c.z);
+  }
+  async encender() {
+    await this.audio.iniciar(); this.audio.arranque(); this.arrancando = 0.9; this.encendido = true; this.marcha = 0; this.v = 0; this.rpm = 0; this.prepararRuedas();
+  }
+  apagar() { this.encendido = false; this.acelObj = 0; }
+  setEscape(id) { this.audio.setEscape(id); this.actualizarSalida(); }
+  setAcelerador(x) { this.acelObj = Math.max(0, Math.min(1, x)); }
+  cambiar(d) {
+    if (!this.encendido) return; const m = Math.max(0, Math.min(6, this.marcha + d)); if (m === this.marcha) return;
+    this.marcha = m; this.corteHasta = performance.now() + 70;   // corte de encendido del quickshifter
+    if (m > 0) this.rpm = Math.max(MOTOR.idle, this.v / MOTOR.circ * 60 * ratio(m)); this.audio.pops(1);
+  }
+  paso(dt) {
+    dt = Math.min(dt, 0.05);
+    if (this.arrancando > 0) { this.arrancando -= dt; this.rpm = Math.min(MOTOR.idle * 1.5, this.rpm + 2600 * dt); if (this.arrancando <= 0) this.rpm = MOTOR.idle * 1.4; }
+    else if (this.encendido) {
+      const corte = performance.now() < this.corteHasta || this.rpm >= MOTOR.corte;
+      if (this.rpm >= MOTOR.corte) this.corteHasta = performance.now() + 60;
+      this.acel += (this.acelObj - this.acel) * Math.min(1, dt * 12);
+      const thr = corte ? 0 : this.acel;
+      if (this.acel > 0.5) this.tAcelAlto = performance.now();
+      if (this.acelObj < 0.05 && this.acel > 0.35 && this.rpm > 6000 && (this.audio.perfil?.crackle || 0) > 0.3) this.audio.pops(2 + Math.round(3 * this.audio.perfil.crackle));
+      if (this.marcha === 0) {
+        // motor libre: inercia del cigüeñal + embrague (J ≈ 0,15 kg·m²) contra fricción creciente con las rpm
+        const Tf = 4 + 0.0042 * this.rpm, alfa = (par(this.rpm) * thr * 0.95 - Tf) / 0.07;
+        this.rpm += alfa * 60 / (2 * Math.PI) * dt;
+        if (thr < 0.05 && this.rpm < MOTOR.idle) this.rpm = MOTOR.idle;   // regulador de ralentí (ISC)
+        this.rpm = Math.max(MOTOR.idle * 0.97, this.rpm);
+      } else {
+        const r = ratio(this.marcha), F = par(this.rpm) * thr * r * 0.92 / MOTOR.rueda;
+        const arrastre = 0.5 * 1.2 * MOTOR.cdA * this.v * this.v + 0.014 * MOTOR.masa * 9.81 + (thr < 0.05 ? 0.18 * par(this.rpm) * r / MOTOR.rueda : 0);
+        this.v = Math.max(0, this.v + (F - arrastre) / MOTOR.masa * dt);
+        this.rpm = Math.max(MOTOR.idle * 0.97, this.v / MOTOR.circ * 60 * r);
+        if (this.qssAuto && this.rpm > MOTOR.qss && this.marcha < 6 && thr > 0.6) this.cambiar(1);
+      }
+      if (this.rpm > MOTOR.corte) this.rpm = MOTOR.corte;
+    } else { this.rpm = Math.max(0, this.rpm - 3500 * dt); this.v = Math.max(0, this.v - 1.5 * dt); }
+    // visual: ruedas (solo la trasera en el banco), cadena, humo, vibración
+    const w = this.v / MOTOR.rueda;
+    if (this.pivotes) for (const p of this.pivotes) if (p.trasera) p.pivot.rotateOnAxis(p.eje, -w * dt);
+    const rp = ruedas(); if (rp.ruedaTras && (rp.ruedaTras.visible || rp.ruedaTras.children.some(c => c.visible))) rp.ruedaTras.rotation.z -= w * dt;
+    if (this.cadenaMap) this.cadenaMap.offset.x -= this.v * dt * 1.6;
+    if (this.encendido) { this.acumHumo += dt * (2 + 26 * this.acel * (0.3 + this.rpm / MOTOR.corte)); while (this.acumHumo >= 1) { this.acumHumo -= 1; this.humo.emitir(1, this.acel); } }
+    this.humo.paso(dt);
+    if (real.cargado) real.raiz.position.y = this.encendido ? 0.0012 * Math.sin(performance.now() * 0.03) * (1 - 0.7 * this.acel) : 0;
+    this.audio.actualizar(this.rpm, this.encendido ? (performance.now() < this.corteHasta ? 0 : this.acel) : 0, this.encendido);
+  }
+  estado() { const r = this.marcha ? ratio(this.marcha) : 0; return { rpm: Math.round(this.rpm), kmh: Math.round(this.v * 3.6), marcha: this.marcha, encendido: this.encendido, corte: this.rpm >= MOTOR.corte - 50, escape: this.audio.perfil?.nombre || '' }; }
+}
+
+
 // Visor del gemelo 3D: estudio, cámara, selección de componentes, resaltado de hallazgos y configurador.
 
 const VISTAS = {
@@ -1134,6 +1350,7 @@ function montarAPI(ctx) {
   const resaltados = new Map();
   const clock = new THREE.Clock();
   let pieza = null;   // escaparate: { pivot, mats:[[mesh, matOriginal]], dims }
+  let banco = null, tPrev = 0;
 
   // ---- modos de visualización (real / paramétrico / holograma) ----
   function aplicarModo() {
@@ -1230,7 +1447,8 @@ function montarAPI(ctx) {
   }
   function frame() {
     requestAnimationFrame(frame); resize();
-    const t = clock.getElapsedTime();
+    const t = clock.getElapsedTime(); const dt = tPrev ? t - tPrev : 0.016; tPrev = t;
+    if (banco) banco.paso(dt);
     if (vuelo) { const k = Math.min(1, (performance.now() - vuelo.t) / vuelo.ms), e = 1 - Math.pow(1 - k, 3); camera.position.lerpVectors(vuelo.p0, vuelo.p1, e); controls.target.lerpVectors(vuelo.t0, vuelo.t1, e); if (k >= 1) vuelo = null; }
     const pulso = 0.28 + 0.22 * Math.sin(t * 4);
     for (const r of resaltados.values()) r.mats.forEach(([m]) => { m.material.emissiveIntensity = r.sev === 'ok' ? 0.2 : pulso; });
@@ -1264,7 +1482,7 @@ function montarAPI(ctx) {
     aplicar(cat, item) {
       if (cat === 'pintura') { setPintura(item.p); if (real.cargado) repintar(item.p.color, item.id !== 'tyb'); }
       else if (cat === 'tendido') { setTendido(item.p); if (real.cargado) tendidoReal(item.p); }
-      else if (cat === 'escape') { limpiarResaltados(); moto.add(crearEscape(item.p)); api._variante = { ...(api._variante || {}), escape: item.id !== 'stock' }; if (esHolograma()) setHolograma(true); aplicarModo(); }
+      else if (cat === 'escape') { limpiarResaltados(); moto.add(crearEscape(item.p)); api._variante = { ...(api._variante || {}), escape: item.id !== 'stock' }; if (esHolograma()) setHolograma(true); aplicarModo(); if (banco) banco.setEscape(item.id); }
       else if (cat === 'rin' || cat === 'llanta') { limpiarResaltados(); crearRuedas(api._cfg.rin.p, api._cfg.llanta.p, moto); api._variante = { ...(api._variante || {}), ruedas: api._cfg.rin.id !== 'stock' || api._cfg.llanta.id !== 'dunlop' }; if (esHolograma()) setHolograma(true); aplicarModo(); }
     },
     // gestos: girar (deltas normalizados de pantalla) y acercar (factor)
@@ -1276,6 +1494,7 @@ function montarAPI(ctx) {
       const paso = () => { if (!activo || i >= comps.length) { activo = false; cb(null, i); return; } const c = comps[i]; cb(c, i); api.enfocar(c); i++; api._tourT = setTimeout(paso, ms); };
       paso(); return () => { activo = false; clearTimeout(api._tourT); };
     },
+    banco() { if (!banco) banco = new Banco(scene); return banco; },
     capturar() { renderer.render(scene, camera); return canvas.toDataURL('image/png'); },
     _cfg: null, _idle: 0,
   };
@@ -1384,6 +1603,7 @@ function asegurarTwin() {
   $('#btn-tour').addEventListener('click', () => iniciarTour());
   $('#btn-piezas').addEventListener('click', e => { const on = $('#explorador').hidden; e.currentTarget.setAttribute('aria-pressed', on); if (on) abrirExplorador(); else cerrarExplorador(); });
   $('#btn-manos').addEventListener('click', e => alternarManos(e.currentTarget));
+  $('#btn-banco').addEventListener('click', e => { const on = $('#banco').hidden; $('#banco').hidden = !on; e.currentTarget.setAttribute('aria-pressed', on); if (on) prepararBanco(); else { bancoActivo?.apagar(); } });
   $('#btn-captura').addEventListener('click', () => { const a = document.createElement('a'); a.href = twin.capturar(); a.download = `mototwin-${VEHICULO.placa}.png`; a.click(); toast('Captura guardada'); });
   requestAnimationFrame(actualizarMarcadores);
   return twin;
@@ -1404,7 +1624,7 @@ function actualizarMarcadores() {
 }
 
 // ---------- Tour de hallazgos (cinemático) ----------
-function iniciarTour() {
+function iniciarTour(ms = 4200) {
   if (!estado.resultado || !estado.resultado.hallazgos.length) { toast('Primero evalúa un peritaje'); return; }
   const cap = $('#tour-cap'); const lista = estado.resultado.hallazgos.filter(f => f.sev !== 'ok');
   const comps = [...new Set(lista.map(f => f.comp))];
@@ -1416,7 +1636,7 @@ function iniciarTour() {
     cap.style.setProperty('--c', f.sev === 'critico' ? 'var(--crit)' : f.sev === 'atencion' ? 'var(--aten)' : 'var(--info)');
     cap.innerHTML = `<small>Parada ${i + 1} de ${comps.length} · ${h(COMPONENTES[comp]?.nombre || comp)}</small><b><span class="sev ${f.sev}">${SEVN[f.sev]}</span> ${h(f.titulo)}</b><small>${h(f.accion[0] || '')}</small>`;
     cap.hidden = false;
-  });
+  }, ms);
 }
 
 // ---------- Informe vivo: el peritaje viaja en el enlace (sin servidor) ----------
@@ -1464,6 +1684,27 @@ $('#exp-next').addEventListener('click', () => irAPieza(piezas[(piezaIdx + 1) % 
 $('#exp-ver').addEventListener('click', () => mostrarPieza(piezas[piezaIdx].id));
 $('#exp-volver').addEventListener('click', () => irAPieza(piezas[piezaIdx].id, false));
 $('#exp-cerrar').addEventListener('click', cerrarExplorador);
+
+// ---------- Banco de pruebas: acelerador, marchas, tacómetro ----------
+let bancoActivo = null, bancoRaf = 0;
+function prepararBanco() {
+  if (bancoActivo) return;
+  const b = bancoActivo = twin.banco(); b.setEscape(estado.cfg.escape);
+  twin.setAutoRotar(false); $('#btn-rotar').setAttribute('aria-pressed', 'false');
+  if (twin.esHolograma()) { twin.setHolograma(false); $('#btn-holo').setAttribute('aria-pressed', 'false'); }
+  twin.setVista('trasera_der');
+  const acel = $('#bk-acel'); const abrir = (e) => { e.preventDefault(); acel.classList.add('on'); b.setAcelerador(1); acel.setPointerCapture?.(e.pointerId); }; const soltar = () => { acel.classList.remove('on'); b.setAcelerador(0); };
+  acel.addEventListener('pointerdown', abrir); acel.addEventListener('pointerup', soltar); acel.addEventListener('pointercancel', soltar); acel.addEventListener('pointerleave', soltar);
+  $('#bk-power').addEventListener('click', async e => { if (b.encendido) { b.apagar(); e.currentTarget.textContent = 'Arrancar'; } else { await b.encender(); e.currentTarget.textContent = 'Apagar'; } });
+  $('#bk-mas').addEventListener('click', () => b.cambiar(1)); $('#bk-menos').addEventListener('click', () => b.cambiar(-1));
+  $('#bk-qss').addEventListener('click', e => { b.qssAuto = !b.qssAuto; e.currentTarget.setAttribute('aria-pressed', b.qssAuto); });
+  window.addEventListener('keydown', e => { if ($('#banco').hidden || e.repeat) return; if (e.code === 'Space') { e.preventDefault(); acel.classList.add('on'); b.setAcelerador(1); } if (e.code === 'ArrowUp') b.cambiar(1); if (e.code === 'ArrowDown') b.cambiar(-1); });
+  window.addEventListener('keyup', e => { if (e.code === 'Space') { acel.classList.remove('on'); b.setAcelerador(0); } });
+  const pintar = () => { bancoRaf = requestAnimationFrame(pintar); if ($('#banco').hidden) return; const st = b.estado();
+    $('#bk-rpm').textContent = (st.rpm / 1000).toFixed(1); $('#bk-kmh').textContent = st.kmh; $('#bk-marcha').textContent = st.marcha || 'N'; $('#bk-escape').textContent = st.escape;
+    $('#bk-aguja').style.transform = `rotate(${-120 + 240 * Math.min(1, st.rpm / 14000)}deg)`; $('#bk-rpm').style.color = st.corte ? 'var(--crit)' : ''; };
+  pintar();
+}
 
 // ---------- Control por gestos (cámara) ----------
 async function alternarManos(btn) {
@@ -1692,6 +1933,9 @@ RENDER.historial = () => {
   $$('#v-historial [data-cargar]').forEach(b => b.addEventListener('click', () => { const i = l.find(x => String(x.id) === b.dataset.cargar); estado.resultado = i; estado.valores = { ...i.valores }; guardar(); pintarSalud(); ir('peritaje'); }));
   $$('#v-historial [data-borrar]').forEach(b => b.addEventListener('click', () => { estado.inspecciones = l.filter(x => String(x.id) !== b.dataset.borrar); guardar(); RENDER.historial(); }));
 };
+
+// Gancho de automatización (grabación de video, pruebas): no se usa desde la interfaz.
+window.MotoTwin = { get twin() { return twin; }, get estado() { return estado; }, ir, iniciarTour, abrirExplorador, irAPieza, mostrarPieza, cerrarExplorador, compartirInforme, evaluar: () => { estado.resultado = evaluar(estado.valores); guardar(); pintarSalud(); } };
 
 // ---------- Arranque ----------
 $$('.nav a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); ir(a.dataset.v); }));
