@@ -1089,6 +1089,58 @@ function tendidoReal(t) { for (const mat of real.pintura) { mat.userData.u.uPatr
 function meshesDeGrupo(g) { return real.meshes.filter(o => o.userData.grupo === g); }
 
 
+// Tablero TFT vivo: sustituye la textura estática del display del glTF por un canvas que dibuja el cuadro
+// de la R1 (barra de rpm con zona roja y luz de cambio, marcha, velocidad, modo y ayudas) en tiempo real.
+
+// Región del display dentro de la textura original (1024×512): u 0,226–0,739 · v 0,460–0,776
+const ZONA_TFT = { x: 0.2265, y: 0.4598, w: 0.513, h: 0.3167 };
+class TableroTFT {
+  constructor(meshes) {
+    const mesh = meshes.find(m => (m.userData.matReal || m.material)?.name === 'Display'); const mat = mesh && (mesh.userData.matReal || mesh.material); if (!mat || !mat.map?.image) return;
+    this.mat = mat; const base = mat.map.image;
+    this.k = 2; const W = 1024 * this.k, H = 512 * this.k;
+    this.canvas = document.createElement('canvas'); this.canvas.width = W; this.canvas.height = H; this.ctx = this.canvas.getContext('2d');
+    this.ctx.drawImage(base, 0, 0, W, H);
+    this.rx = Math.round(ZONA_TFT.x * W); this.ry = Math.round(ZONA_TFT.y * H); this.rw = Math.round(ZONA_TFT.w * W); this.rh = Math.round(ZONA_TFT.h * H);
+    this.scr = document.createElement('canvas'); this.scr.width = this.rw; this.scr.height = this.rh; this.sc = this.scr.getContext('2d');
+    const tex = this.tex = new THREE.CanvasTexture(this.canvas); tex.flipY = mat.map.flipY; tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    mat.map = tex; mat.emissiveMap = tex; mat.emissive = new THREE.Color('#ffffff'); mat.emissiveIntensity = 0.9; mat.needsUpdate = true;
+    this.flip = true; this.ultimo = 0; this.parpadeo = 0; this.listo = true;
+  }
+  dibujar(st, t) {
+    if (!this.listo || t - this.ultimo < 0.05) return; this.ultimo = t;
+    const c = this.sc, W = this.rw, H = this.rh, u = W / 1050;   // diseño a 1050 px de ancho
+    c.save(); c.scale(u, u);
+    const g = c.createLinearGradient(0, 0, 0, 324); g.addColorStop(0, '#0f1216'); g.addColorStop(1, '#05070a'); c.fillStyle = g; c.fillRect(0, 0, 1050, 324);
+    c.fillStyle = '#d9dde3'; c.font = '600 22px Manrope, Arial'; c.textBaseline = 'middle';
+    const fila = [['MODE-A', ''], ['PWR', '1'], ['TCS', '3'], ['SCS', '2'], ['EBM', '1'], ['LIF', '3']]; let x = 40;
+    for (const [k, v] of fila) { c.fillStyle = '#9aa3ad'; c.fillText(k, x, 26); x += c.measureText(k).width + 8; if (v) { c.fillStyle = '#ffffff'; c.fillRect(x, 13, 26, 26); c.fillStyle = '#000'; c.font = '800 20px Manrope, Arial'; c.fillText(v, x + 7, 27); c.font = '600 22px Manrope, Arial'; x += 26; } x += 34; }
+    // barra de rpm: 0–14.000 en 56 segmentos, zona roja desde 13.000, luz de cambio a 12.600
+    const rpm = st.encendido ? st.rpm : 0, segs = 56, x0 = 40, y0 = 58, ancho = 970, hseg = 34;
+    for (let i = 0; i < segs; i++) {
+      const r = (i + 1) / segs * 14000, on = rpm >= r - 14000 / segs / 2, rojo = r > 13000;
+      c.fillStyle = on ? (rojo ? '#ff3b4e' : (r > 11500 ? '#ffd166' : '#eef2f6')) : (rojo ? '#3a1216' : '#20262d');
+      const h = hseg * (0.55 + 0.45 * i / segs); c.fillRect(x0 + i * (ancho / segs), y0 + hseg - h, ancho / segs - 3, h);
+    }
+    for (let n = 1; n <= 14; n++) { c.fillStyle = n >= 13 ? '#ff3b4e' : '#9aa3ad'; c.font = '600 18px Manrope, Arial'; c.textAlign = 'center'; c.fillText(String(n), x0 + n / 14 * ancho, y0 + hseg + 16); }
+    c.textAlign = 'left';
+    if (rpm > 12600 && st.encendido) { this.parpadeo = (this.parpadeo + 1) % 6; if (this.parpadeo < 3) { c.fillStyle = '#ffffff'; c.fillRect(0, 0, 1050, 6); c.fillRect(0, 318, 1050, 6); } }
+    // marcha, velocidad, temperaturas, reloj
+    c.fillStyle = '#ffffff'; c.font = '800 150px Manrope, Arial'; c.textAlign = 'center'; c.fillText(st.encendido ? (st.marcha || 'N') : '-', 525, 210);
+    c.font = '800 92px Manrope, Arial'; c.textAlign = 'right'; c.fillText(String(st.encendido ? st.kmh : 0), 1000, 190); c.font = '600 22px Manrope, Arial'; c.fillText('km/h', 1000, 250);
+    c.textAlign = 'left'; c.fillStyle = '#9aa3ad'; c.font = '600 20px Manrope, Arial'; c.fillText('C.TEMP', 40, 150); c.fillText('A.TEMP', 40, 200); c.fillText('QS', 40, 285);
+    c.fillStyle = '#ffffff'; c.font = '700 30px Manrope, Arial'; c.fillText((st.encendido ? Math.min(98, 62 + Math.round(st.rpm / 400)) : 24) + '°C', 150, 150); c.fillText('26°C', 150, 200);
+    c.fillStyle = st.encendido ? '#00e0b0' : '#556'; c.font = '800 24px Manrope, Arial'; c.fillText('▲▼', 80, 285);
+    c.fillStyle = '#ffffff'; c.font = '600 26px Manrope, Arial'; c.textAlign = 'right'; const d = new Date(); c.fillText(`${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`, 1000, 290); c.textAlign = 'left';
+    c.fillStyle = '#9aa3ad'; c.font = '600 20px Manrope, Arial'; c.fillText(st.escape || '', 300, 290);
+    c.restore();
+    // pegar en la textura (volteado verticalmente: la textura del glTF va invertida)
+    const t2 = this.ctx; t2.save(); t2.translate(this.rx, this.ry + (this.flip ? this.rh : 0)); t2.scale(1, this.flip ? -1 : 1); t2.drawImage(this.scr, 0, 0); t2.restore();
+    this.tex.needsUpdate = true;
+  }
+}
+
+
 // Banco de pruebas virtual: modelo longitudinal de la R1 (par, relaciones de caja, arrastre), rueda y cadena en
 // movimiento, humo en el escape y motor sonoro por síntesis física (pulsos de escape del cigüeñal crossplane).
 
@@ -1168,12 +1220,14 @@ class MotorAudio {
   }
   // explosiones en retención (escapes libres): ráfagas cortas de ruido por la misma cadena del escape
   pops(n) {
-    if (!this.ctx || !this.perfil) return; const c = this.ctx;
+    if (!this.ctx || !this.perfil) return []; const c = this.ctx, tiempos = [];
     for (let i = 0; i < n; i++) {
-      const s = c.createBufferSource(); s.buffer = this.nb; const g = c.createGain(); const t0 = c.currentTime + Math.random() * 1.1;
+      const d = Math.random() * 1.1; tiempos.push(d);
+      const s = c.createBufferSource(); s.buffer = this.nb; const g = c.createGain(); const t0 = c.currentTime + d;
       g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(0.9 * this.perfil.crackle * (0.4 + Math.random()), t0 + 0.004); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.05 + Math.random() * 0.06);
       s.connect(g).connect(this.peak); s.start(t0); s.stop(t0 + 0.2);
     }
+    return tiempos;
   }
   arranque() {
     if (!this.ctx) return; const c = this.ctx, t = c.currentTime;
@@ -1188,10 +1242,12 @@ class Humo {
   constructor(scene) {
     this.n = 220; this.pos = new Float32Array(this.n * 3); this.vel = new Float32Array(this.n * 3); this.vida = new Float32Array(this.n); this.edad = new Float32Array(this.n); this.tam = new Float32Array(this.n); this.alfa = new Float32Array(this.n);
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(this.pos, 3)); g.setAttribute('tam', new THREE.BufferAttribute(this.tam, 1)); g.setAttribute('alfa', new THREE.BufferAttribute(this.alfa, 1));
-    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(0.5, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    for (let i = 0; i < 26; i++) { const px = 40 + Math.random() * 48, py = 40 + Math.random() * 48, r = 14 + Math.random() * 26; const gr = x.createRadialGradient(px, py, 0, px, py, r); gr.addColorStop(0, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); }
+    const gm = x.createRadialGradient(64, 64, 20, 64, 64, 64); gm.addColorStop(0, 'rgba(0,0,0,0)'); gm.addColorStop(1, 'rgba(0,0,0,1)'); x.globalCompositeOperation = 'destination-out'; x.fillStyle = gm; x.fillRect(0, 0, 128, 128);
     const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uTex: { value: new THREE.CanvasTexture(c) }, uPR: { value: Math.min(devicePixelRatio, 2) } },
       vertexShader: `attribute float tam; attribute float alfa; varying float vA; uniform float uPR; void main(){ vA = alfa; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; gl_PointSize = tam * uPR * 380.0 / -mv.z; }`,
-      fragmentShader: `uniform sampler2D uTex; varying float vA; void main(){ float a = texture2D(uTex, gl_PointCoord).a; gl_FragColor = vec4(vec3(0.62, 0.64, 0.66), a * vA); }` });
+      fragmentShader: `uniform sampler2D uTex; varying float vA; void main(){ float a = texture2D(uTex, gl_PointCoord).a; gl_FragColor = vec4(vec3(0.55, 0.57, 0.6), a * vA); }` });
     this.puntos = new THREE.Points(g, m); this.puntos.frustumCulled = false; scene.add(this.puntos); this.sig = 0; this.salida = new THREE.Vector3(-1.05, 0.55, 0.22);
   }
   emitir(k, fuerza) {
@@ -1213,10 +1269,41 @@ class Humo {
   }
 }
 
+// ---------- Llamaradas del escape (explosiones en retención y cortes) ----------
+class Llamarada {
+  constructor(scene) {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d');
+    const g = x.createRadialGradient(70, 64, 0, 70, 64, 130); g.addColorStop(0, 'rgba(255,255,235,1)'); g.addColorStop(0.18, 'rgba(255,220,120,0.95)'); g.addColorStop(0.45, 'rgba(255,120,30,0.7)'); g.addColorStop(0.75, 'rgba(200,40,10,0.25)'); g.addColorStop(1, 'rgba(120,10,0,0)');
+    x.save(); x.scale(1, 0.5); x.translate(0, 64); x.fillStyle = g; x.fillRect(0, 0, 256, 256); x.restore();
+    for (let i = 0; i < 40; i++) { const px = 60 + Math.random() * 180, py = 34 + Math.random() * 60, r = 6 + Math.random() * 16; const gg = x.createRadialGradient(px, py, 0, px, py, r); gg.addColorStop(0, 'rgba(255,200,90,0.35)'); gg.addColorStop(1, 'rgba(255,90,20,0)'); x.fillStyle = gg; x.fillRect(0, 0, 256, 128); }
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+    this.sprites = [0, 1, 2].map(() => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0 })); sp.center.set(0.27, 0.5); sp.visible = false; scene.add(sp); return sp; });
+    this.luz = new THREE.PointLight('#ff7a1a', 0, 1.6, 2); scene.add(this.luz); this.activas = [];
+  }
+  disparar(f) { this.activas.push({ t0: performance.now() / 1000, dur: 0.11 + 0.12 * f, f, giro: (Math.random() - 0.5) * 0.5, sem: Math.random() }); }
+  paso(salida, camera) {
+    const t = performance.now() / 1000; this.activas = this.activas.filter(a => t - a.t0 < a.dur);
+    if (!this.activas.length) { this.sprites.forEach(s => s.visible = false); this.luz.intensity = 0; return; }
+    // orientación en pantalla del chorro (hacia atrás y levemente arriba)
+    const p0 = salida.clone().project(camera), p1 = salida.clone().add(new THREE.Vector3(-0.4, 0.06, 0)).project(camera);
+    const ang = Math.atan2((p1.y - p0.y), (p1.x - p0.x) * camera.aspect);
+    let inten = 0;
+    this.sprites.forEach((sp, i) => {
+      const a = this.activas[i % this.activas.length]; const k = (t - a.t0) / a.dur, env = k < 0.15 ? k / 0.15 : Math.pow(1 - (k - 0.15) / 0.85, 1.6);
+      const parpadeo = 0.75 + 0.25 * Math.sin(t * 90 + i * 2.1 + a.sem * 10);
+      const largo = (0.22 + 0.46 * a.f) * (0.6 + 0.4 * env) * (1 + i * 0.18), alto = (0.09 + 0.12 * a.f) * (0.8 + 0.2 * parpadeo);
+      sp.visible = true; sp.material.opacity = Math.min(1, env * parpadeo * (0.9 - i * 0.2)); sp.material.rotation = ang + a.giro * (i - 1) * 0.6;
+      sp.scale.set(largo, alto, 1); sp.position.copy(salida).add(new THREE.Vector3(-0.02 - i * 0.03, 0.005, (i - 1) * 0.01));
+      inten = Math.max(inten, env * a.f);
+    });
+    this.luz.position.copy(salida).add(new THREE.Vector3(-0.18, 0.05, 0)); this.luz.intensity = 7 * inten;
+  }
+}
+
 // ---------- Banco de pruebas (dinámica + acople visual) ----------
 class Banco {
   constructor(scene) {
-    this.scene = scene; this.audio = new MotorAudio(); this.humo = new Humo(scene);
+    this.scene = scene; this.audio = new MotorAudio(); this.humo = new Humo(scene); this.llama = new Llamarada(scene); this.programadas = []; this.tablero = null; this.camera = null;
     this.encendido = false; this.rpm = 0; this.v = 0; this.marcha = 0; this.acel = 0; this.acelObj = 0; this.qssAuto = true; this.corteHasta = 0; this.arrancando = 0; this.acumHumo = 0; this.pivotes = null; this.tAcelAlto = 0;
   }
   // Los grupos de rueda del glTF giran alrededor de su eje real: se envuelven en un pivote centrado en el eje.
@@ -1230,6 +1317,7 @@ class Banco {
       const eje = new THREE.Vector3(0, 0, 1).applyQuaternion(padre.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
       this.pivotes.push({ pivot, eje, trasera: nombre.includes('Rear') });
     }
+    this.tablero = new TableroTFT(real.meshes);
     const cadena = real.meshes.find(m => m.material?.name === 'Chain'); if (cadena?.material.map) { cadena.material.map.wrapS = cadena.material.map.wrapT = THREE.RepeatWrapping; this.cadenaMap = cadena.material.map; }
     this.actualizarSalida();
   }
@@ -1245,11 +1333,17 @@ class Banco {
   }
   apagar() { this.encendido = false; this.acelObj = 0; }
   setEscape(id) { this.audio.setEscape(id); this.actualizarSalida(); }
+  // explosión: sonido + llamarada sincronizados (solo escapes libres; la fuerza escala con la crepitación del silenciador)
+  explotar(n, fuerza = 1) {
+    const cr = this.audio.perfil?.crackle || 0; if (cr < 0.3) return;
+    const ahora = performance.now() / 1000;
+    for (const d of this.audio.pops(n)) this.programadas.push({ t: ahora + d, f: Math.min(1, fuerza * (0.5 + cr)) });
+  }
   setAcelerador(x) { this.acelObj = Math.max(0, Math.min(1, x)); }
   cambiar(d) {
     if (!this.encendido) return; const m = Math.max(0, Math.min(6, this.marcha + d)); if (m === this.marcha) return;
     this.marcha = m; this.corteHasta = performance.now() + 70;   // corte de encendido del quickshifter
-    if (m > 0) this.rpm = Math.max(MOTOR.idle, this.v / MOTOR.circ * 60 * ratio(m)); this.audio.pops(1);
+    if (m > 0) this.rpm = Math.max(MOTOR.idle, this.v / MOTOR.circ * 60 * ratio(m)); if (this.rpm > 7000 && d > 0) this.explotar(1, 0.8);
   }
   paso(dt) {
     dt = Math.min(dt, 0.05);
@@ -1260,7 +1354,8 @@ class Banco {
       this.acel += (this.acelObj - this.acel) * Math.min(1, dt * 12);
       const thr = corte ? 0 : this.acel;
       if (this.acel > 0.5) this.tAcelAlto = performance.now();
-      if (this.acelObj < 0.05 && this.acel > 0.35 && this.rpm > 6000 && (this.audio.perfil?.crackle || 0) > 0.3) this.audio.pops(2 + Math.round(3 * this.audio.perfil.crackle));
+      if (this.acelObj < 0.05 && this.acel > 0.35 && this.rpm > 6000) this.explotar(2 + Math.round(3 * (this.audio.perfil?.crackle || 0)), 0.6 + 0.4 * this.rpm / MOTOR.corte);
+      if (this.rpm >= MOTOR.corte - 30 && Math.random() < 0.25) this.explotar(1, 1);
       if (this.marcha === 0) {
         // motor libre: inercia del cigüeñal + embrague (J ≈ 0,15 kg·m²) contra fricción creciente con las rpm
         const Tf = 4 + 0.0042 * this.rpm, alfa = (par(this.rpm) * thr * 0.95 - Tf) / 0.07;
@@ -1282,6 +1377,10 @@ class Banco {
     const rp = ruedas(); if (rp.ruedaTras && (rp.ruedaTras.visible || rp.ruedaTras.children.some(c => c.visible))) rp.ruedaTras.rotation.z -= w * dt;
     if (this.cadenaMap) this.cadenaMap.offset.x -= this.v * dt * 1.6;
     if (this.encendido) { this.acumHumo += dt * (2 + 26 * this.acel * (0.3 + this.rpm / MOTOR.corte)); while (this.acumHumo >= 1) { this.acumHumo -= 1; this.humo.emitir(1, this.acel); } }
+    const ahora = performance.now() / 1000;
+    this.programadas = this.programadas.filter(p => { if (ahora >= p.t) { this.llama.disparar(p.f); this.humo.emitir(3 + Math.round(4 * p.f), 1.2); return false; } return true; });
+    if (this.camera) this.llama.paso(this.humo.salida, this.camera);
+    this.tablero?.dibujar(this.estado(), ahora);
     this.humo.paso(dt);
     if (real.cargado) real.raiz.position.y = this.encendido ? 0.0012 * Math.sin(performance.now() * 0.03) * (1 - 0.7 * this.acel) : 0;
     this.audio.actualizar(this.rpm, this.encendido ? (performance.now() < this.corteHasta ? 0 : this.acel) : 0, this.encendido);
@@ -1494,7 +1593,7 @@ function montarAPI(ctx) {
       const paso = () => { if (!activo || i >= comps.length) { activo = false; cb(null, i); return; } const c = comps[i]; cb(c, i); api.enfocar(c); i++; api._tourT = setTimeout(paso, ms); };
       paso(); return () => { activo = false; clearTimeout(api._tourT); };
     },
-    banco() { if (!banco) banco = new Banco(scene); return banco; },
+    banco() { if (!banco) { banco = new Banco(scene); banco.camera = camera; } return banco; },
     capturar() { renderer.render(scene, camera); return canvas.toDataURL('image/png'); },
     _cfg: null, _idle: 0,
   };
